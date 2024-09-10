@@ -10,12 +10,16 @@ sc = SparkContext.getOrCreate()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
 job = Job(glueContext)
+
 redshift_jdbc_url = "jdbc:redshift://oyo-processed-data-cluster.ccfrrr2xyqrl.eu-north-1.redshift.amazonaws.com:5439/processed_db"
 redshift_user = "heighter"
 redshift_password = "Allah78666"
+
 spark.conf.set("spark.sql.catalog.glue_catalog", "org.apache.spark.sql.execution.datasources.v2.glue.GlueCatalog")
 df = spark.read.format("glue").option("header","true").table("oyo_project_processed_glue_database.oyo_processed_data")
+
 filtered_null_rows = df.filter(df['id'].isNotNull())
+
 filtered_null_rows.write \
   .format("jdbc") \
   .option("url", redshift_jdbc_url) \
